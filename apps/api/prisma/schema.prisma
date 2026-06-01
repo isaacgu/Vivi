@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CUSTOMER
+  VENDOR
+  ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  LIVE
+  CLOSED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  PAYSTACK
+  OZOW
+  STRIPE
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+model User {
+  id            String             @id @default(cuid())
+  email         String             @unique
+  phone         String?
+  firstName     String?
+  lastName      String?
+  role          UserRole           @default(CUSTOMER)
+  vendorProfile VendorProfile?
+  events        Event[]
+  gifts         GiftContribution[]
+  payments      Payment[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+model VendorProfile {
+  id          String   @id @default(cuid())
+  displayName String
+  businessReg String?
+  ownerId     String   @unique
+  owner       User     @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String             @id @default(cuid())
+  title       String
+  description String?
+  status      EventStatus        @default(DRAFT)
+  startsAt    DateTime?
+  city        String?
+  province    String?
+  country     String             @default("ZA")
+  hostId      String
+  host        User               @relation(fields: [hostId], references: [id])
+  gifts       GiftContribution[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([hostId])
+  @@index([status])
+}
+
+model GiftContribution {
+  id            String    @id @default(cuid())
+  eventId       String
+  event         Event     @relation(fields: [eventId], references: [id])
+  contributorId String?
+  contributor   User?     @relation(fields: [contributorId], references: [id])
+  label         String
+  message       String?
+  amountCents   Int
+  currency      String    @default("ZAR")
+  payment       Payment?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([eventId])
+  @@index([contributorId])
+}
+
+model Payment {
+  id                String            @id @default(cuid())
+  provider          PaymentProvider
+  status            PaymentStatus     @default(PENDING)
+  amountCents       Int
+  currency          String            @default("ZAR")
+  providerReference String?           @unique
+  authorizationUrl  String?
+  userId            String?
+  user              User?             @relation(fields: [userId], references: [id])
+  contributionId    String?           @unique
+  contribution      GiftContribution? @relation(fields: [contributionId], references: [id])
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([provider])
+  @@index([status])
+  @@index([userId])
+}
