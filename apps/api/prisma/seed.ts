@@ -69,6 +69,33 @@ async function main() {
       amountCents: 75000,
     },
   });
+
+  const graduationEvent = await prisma.event.upsert({
+    where: { id: 'demo-midrand-graduation' },
+    update: {},
+    create: {
+      id: 'demo-midrand-graduation',
+      title: 'Lebo graduation lunch',
+      description: 'Demo graduation event for listing and detail flows.',
+      status: 'LIVE',
+      city: 'Midrand',
+      province: 'Gauteng',
+      startsAt: new Date('2026-09-05T12:00:00.000Z'),
+      hostId: host.id,
+    },
+  });
+
+  await prisma.giftContribution.upsert({
+    where: { id: 'demo-midrand-graduation-gift-1' },
+    update: {},
+    create: {
+      id: 'demo-midrand-graduation-gift-1',
+      eventId: graduationEvent.id,
+      label: 'Graduation gift pool',
+      message: 'A second seeded contribution for list/detail testing.',
+      amountCents: 125000,
+    },
+  });
 }
 
 main()

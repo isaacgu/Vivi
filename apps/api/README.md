@@ -20,6 +20,9 @@ Useful endpoints:
 - `GET /health/ready`
 - `POST /payments/paystack/checkout`
 - `POST /api/v1/payments/paystack/checkout`
+- `POST /api/v1/payments/paystack/webhook`
+- `GET /openapi.json`
+- `GET /docs`
 
 ## Docker
 
@@ -32,4 +35,10 @@ Run migrations from the host for now:
 
 ```powershell
 npm run api:migrate
+```
+
+Optional tools:
+
+```powershell
+docker compose -f infra/docker-compose.yml --profile tools up -d pgadmin redisinsight
 ```

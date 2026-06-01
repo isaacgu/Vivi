@@ -12,6 +12,7 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('*'),
   DATABASE_URL: z.string().url().default(localDatabaseUrl),
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
+  DEV_AUTH_ENABLED: z.coerce.boolean().default(process.env.NODE_ENV !== 'production'),
   JWT_ISSUER: z.string().optional(),
   PAYSTACK_SECRET_KEY: z.string().optional(),
   PAYSTACK_WEBHOOK_SECRET: z.string().optional(),

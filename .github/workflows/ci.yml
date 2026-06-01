@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  api:
+    name: API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install API dependencies
+        run: npm ci
+        working-directory: apps/api
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+        working-directory: apps/api
+
+      - name: Build API
+        run: npm run build
+        working-directory: apps/api
+
+      - name: Test API
+        run: npm run test
+        working-directory: apps/api
+
+  mobile:
+    name: Mobile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Install mobile dependencies
+        run: npm ci
+        working-directory: apps/mobile
+
+      - name: Lint mobile
+        run: npm run lint
+        working-directory: apps/mobile

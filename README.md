@@ -56,6 +56,15 @@ docker compose -f infra/docker-compose.yml down
 
 The local API image name is `evivi-api:latest`.
 
+Optional database/cache tools:
+
+```powershell
+docker compose -f infra/docker-compose.yml --profile tools up -d pgadmin redisinsight
+```
+
+- pgAdmin: `http://localhost:5050`
+- Redis Insight: `http://localhost:5540`
+
 For browser preview of the mobile app:
 
 ```powershell
